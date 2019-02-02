@@ -6,7 +6,13 @@ import java.util.concurrent.TimeUnit;
 
 public class Main {
     public static void main(String[] args) throws InterruptedException {
-        AppSettings.stateArguments(args);
+        try {
+            AppSettings.stateArguments(args);
+        } catch (IllegalArgumentException e) {
+            System.out.println("Program can not continue. Please, see error message:");
+            System.out.println(e.getMessage());
+            return;
+        }
 
         // Main truck to move
         Truck truck = new Truck(AppSettings.START_X, AppSettings.START_Y);

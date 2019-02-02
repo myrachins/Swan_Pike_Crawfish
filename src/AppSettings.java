@@ -18,7 +18,7 @@ public class AppSettings {
 
     static void stateArguments(String[] args) {
         if(args == null) {
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException("System arguments can not be null");
         }
         for(int i = 0; i < args.length; i++) {
             if(args[i].startsWith("-")) {

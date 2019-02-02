@@ -34,10 +34,14 @@ public class Creature {
     }
 
     public void moveTruck(Truck truck) {
+        double force = ThreadLocalRandom.current().nextDouble(AppSettings.COEF_LOW_BOUND, AppSettings.COEF_UPPER_BOUND);
+        moveTruck(truck, force);
+    }
+
+    public void moveTruck(Truck truck, double force) {
         synchronized (truck) {
-            double coef = ThreadLocalRandom.current().nextDouble(AppSettings.COEF_LOW_BOUND, AppSettings.COEF_UPPER_BOUND);
-            double x = truck.getX() + coef * cosAngle;
-            double y = truck.getY() + coef * sinAngle;
+            double x = truck.getX() + force * cosAngle;
+            double y = truck.getY() + force * sinAngle;
             truck.setX(x);
             truck.setY(y);
 
