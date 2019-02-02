@@ -1,3 +1,5 @@
+import java.util.concurrent.ThreadLocalRandom;
+
 public class Creature {
     private String name;
     private double angle;
@@ -33,7 +35,7 @@ public class Creature {
 
     public void moveTruck(Truck truck) {
         synchronized (truck) {
-            double coef = AppSettings.randValue(AppSettings.COEF_LOW_BOUND, AppSettings.COEF_UPPER_BOUND);
+            double coef = ThreadLocalRandom.current().nextDouble(AppSettings.COEF_LOW_BOUND, AppSettings.COEF_UPPER_BOUND);
             double x = truck.getX() + coef * cosAngle;
             double y = truck.getY() + coef * sinAngle;
             truck.setX(x);

@@ -1,11 +1,17 @@
 import java.util.ArrayList;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
 
 public class Main {
-    public static void main(String[] args) {
-        Truck truck = new Truck();
+    public static void main(String[] args) throws InterruptedException {
+        AppSettings.stateArguments(args);
+
+        // Main truck to move
+        Truck truck = new Truck(AppSettings.START_X, AppSettings.START_Y);
+
+        System.out.println("Truck's start location: \t " + truck.getCoordinates() + System.lineSeparator());
 
         // Creating list of creatures
         ArrayList<Creature> creatures = new ArrayList<>();
@@ -15,31 +21,43 @@ public class Main {
 
         // Starting timer to output message every specified seconds
         ScheduledExecutorService exec = Executors.newSingleThreadScheduledExecutor();
-        exec.scheduleAtFixedRate(() -> System.out.printf("Truck location: (%f, %f)" + System.lineSeparator(),
-                truck.getX(), truck.getY()), 0, AppSettings.REPEAT_OUTPUT_TIME, TimeUnit.SECONDS);
+        exec.scheduleAtFixedRate(() -> System.out.println("Truck's location: \t " + truck.getCoordinates()),
+                0, AppSettings.REPEAT_OUTPUT_TIME, TimeUnit.SECONDS);
 
         // Creating list of threads to execute
         ArrayList<Thread> threads = new ArrayList<>();
 
         for(Creature creature : creatures) {
-            Thread thread = new Thread(() -> {
+            threads.add(new Thread(() -> {
                 while (true) {
                     creature.moveTruck(truck);
+                    if(AppSettings.SHOW_EACH_MOVE) {
+                        System.out.printf("Truck is moved by %s to location: \t " + truck.getCoordinates() + System.lineSeparator(),
+                                creature.getName());
+                    }
                     try {
-                        Thread.sleep((int) AppSettings.randValue(AppSettings.SLEEP_LOW_BOUND, AppSettings.SLEEP_UPPER_BOUND));
+                        Thread.sleep(ThreadLocalRandom.current().nextInt(AppSettings.SLEEP_LOW_BOUND,
+                                AppSettings.SLEEP_UPPER_BOUND));
                     } catch (InterruptedException e) {
-                        e.printStackTrace();
-                        Thread.currentThread().interrupt();
+                        System.out.println("- " + creature.getName() + " finished 'work'");
+                        break; // after interrupting going out from cycle
                     }
                 }
-            });
-            threads.add(thread);
-            thread.start();
+            }));
         }
 
-        // Interrupt all threads after 25 seconds
-//        for(Thread thread : threads) {
-//            thread.interrupt();
-//        }
+        // We start executing threads only here to make competition more fair - we do not spend much time on creation new
+        // objects of streams, while already created objects are executing at the moment
+        threads.forEach(Thread::start);
+        Thread.sleep(AppSettings.WORK_TIME);
+
+        // Interrupting all threads
+        threads.forEach(Thread::interrupt);
+        exec.shutdown();
+
+        // Outputting all result information
+        System.out.println(System.lineSeparator() + "Final location of truck: \t " + truck.getCoordinates());
+        System.out.printf(System.lineSeparator() + "Time spent on 'work': \t %d (milliseconds)" + System.lineSeparator(),
+                AppSettings.WORK_TIME);
     }
 }
