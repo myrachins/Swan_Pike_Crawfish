@@ -9,10 +9,13 @@
 * readme.md
 
 ## Additional functionality
-- '-i' key for additional information about what creatures are doing while work
+- `-i` key for additional information about what creatures are doing while work
 
 ## Example of execution
-java -jar main.jar -i 10 20
+- `java -jar main.jar -i 10 20`
+- `java -jar main.jar 10 20`
+- `java -jar main.jar -i`
+- `java -jar main.jar`
 
 ## Team
 - Rachinskiy Maxim

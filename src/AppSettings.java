@@ -33,6 +33,7 @@ public class AppSettings {
                 }
                 START_X = Double.parseDouble(args[i]);
                 START_Y = Double.parseDouble(args[++i]);
+                break; // Params of command should be last
             }
         }
     }
